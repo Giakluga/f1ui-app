@@ -144,8 +144,8 @@
             "WITH c.nationality AS Nationality, COUNT(DISTINCT c) AS Num_of_constructors\n"+
             "CALL { MATCH (c2:Constructor)\n"+
                 "RETURN COUNT(DISTINCT c2) AS total}\n"+
-                "RETURN Nationality, Num_of_constructors as `Number of teams`, ROUND(100.0 * Num_of_constructors / total, 2) AS `Percentage(%)`" +
-                "ORDER BY Num_of_constructors DESC" +
+                "RETURN Nationality, Num_of_constructors as `Number of teams`, ROUND(100.0 * Num_of_constructors / total, 2) AS `Percentage(%)`\n" +
+                "ORDER BY Num_of_constructors DESC\n" +
                 "LIMIT 10",
             builtin: true
         },
@@ -209,8 +209,8 @@
                  "ORDER BY startPos DESC\n" +
                  "LIMIT 10\n" +
                  "RETURN\n" +
-                 "  d.forename +' ' + d.surname AS Driver,\n" +
-                 "  ra.name + ' ' (''+ ra.year + '')'' AS Race,\n" +
+                 "  d.forename + ' ' + d.surname AS Driver,\n" +
+                 "  ra.name + ' ('+ ra.year + ')' AS Race,\n" +
                  "  startPos AS `Starting grid position`,\n" +
                  "  endPos AS `Final position`,\n" +
                  "  (startPos - endPos) AS `Positions gained`;\n",
@@ -256,7 +256,7 @@
             builtin: true
         },
         {
-            name: "Related drivers,",
+            name: "Related drivers",
             query: "MATCH (d:Driver)\n" +
                 "WITH d LIMIT 1\n" +
                 "MERGE (d)-[r:RELATED_TO {\n" +
