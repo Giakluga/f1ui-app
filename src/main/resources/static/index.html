@@ -133,39 +133,61 @@
         },
         {
             name: "All time victories",
-            query: "MATCH (d:Driver)-[rel:RESULTS_IN]->(r:Race) WHERE toInteger(r.position) = 1 RETURN d.forename + ' ' + d.surname AS driver, count(rel) AS wins ORDER BY wins DESC",
+            query: "MATCH (d:Driver)-[rel:RESULTS_IN]->(r:Race)\n"+
+                "WHERE toInteger(r.position) = 1\n"+
+                "RETURN d.forename + ' ' + d.surname AS driver, count(rel) AS wins ORDER BY wins DESC;",
             builtin: true
         },
         {
             name: "Number of teams per nationalilty",
-            query: "MATCH (c:Constructor) WITH c.nationality AS Nationality, COUNT(DISTINCT c) AS Num_of_constructor CALL { MATCH (c2:Constructor) RETURN COUNT(DISTINCT c2) AS total}RETURNNationality, Num_of_constructors as `Number of teams`, ROUND(100.0 * Num_of_constructors / total, 2) AS `Percentage(%)`ORDER BY Num_of_constructors DESCLIMIT 10",
+            query: "MATCH (c:Constructor)\n"+
+            "WITH c.nationality AS Nationality, COUNT(DISTINCT c) AS Num_of_constructors\n"+
+            "CALL { MATCH (c2:Constructor)\n"+
+                "RETURN COUNT(DISTINCT c2) AS total}\n"+
+                "RETURN Nationality, Num_of_constructors as `Number of teams`, ROUND(100.0 * Num_of_constructors / total, 2) AS `Percentage(%)`" +
+                "ORDER BY Num_of_constructors DESC" +
+                "LIMIT 10",
             builtin: true
         },
         {
             name: "Drivers with > 150 races",
-            query: "MATCH (d:Driver)-[:RESULTS_IN]->(r:Race) WITH d, COUNT(r) AS Num_races WHERE Num_races > 150 RETURN d.forename + ' ' + d.surname AS Pilot, Num_races AS `Number of races until 2024` ORDER BY Num_races DESC",
+            query: "MATCH (d:Driver)-[:RESULTS_IN]->(r:Race)\n" +
+            "WITH d, COUNT(r) AS Num_races\n" +
+                "WHERE Num_races > 150\n" +
+                "RETURN d.forename + ' ' + d.surname AS Pilot, Num_races AS `Number of races until 2024`\n" +
+                "ORDER BY Num_races DESC",
             builtin: true
         },
         {
             name: "Pilots who won their first GP - the fastest",
-            query: "MATCH (d:Driver)-[r:RESULTS_IN]->(ra:Race) WHERE ra.date IS NOT NULL WITH d, r, ra, split(ra.date, '/') AS p WITH d, r, ra, date(p[2] + '-' + p[1] + '-' + p[0]) AS raceDate ORDER BY d.driverId, raceDate ASC WITH d, collect({race: ra, date: raceDate, pos: coalesce(toString(r.position), toString(r.positionOrder))}) AS races WITH d, races[0] AS debut, [x IN races WHERE x.pos = '1'][0] AS firstWin, races AS allRaces WHERE firstWin IS NOT NULL WITH d, debut, firstWin, allRaces, apoc.coll.indexOf(allRaces, debut) AS debutIndex, apoc.coll.indexOf(allRaces, firstWin) AS winIndex WITH d, debut, firstWin, (winIndex - debutIndex + 1) AS `Races To Win`, duration.inDays(debut.date, firstWin.date).days AS `Days To First Win` RETURN d.forename + ' ' + d.surname AS Driver, toString(debut.date.day) + '/' + toString(debut.date.month) + '/' + toString(debut.date.year) AS `Debut Date`, debut.race.name AS DebutGP, toString(firstWin.date.day) + '/' + toString(firstWin.date.month) + '/' + toString(firstWin.date.year) AS `First Win Date`, firstWin.race.name AS `First Win GP`, `Days To First Win`, `Races To Win` ORDER BY `Races To Win` ASC, `Days To First Win` ASC LIMIT 25",
+            query: "MATCH (d:Driver)-[r:RESULTS_IN]->(ra:Race) WHERE ra.date IS NOT NULL " +
+                "WITH d, r, ra, split(ra.date, '/') AS p " +
+                "WITH d, r, ra, date(p[2] + '-' + p[1] + '-' + p[0]) AS raceDate " +
+                "ORDER BY d.driverId, raceDate ASC " +
+                "WITH d, collect({race: ra, date: raceDate, pos: coalesce(toString(r.position), toString(r.positionOrder))}) AS races " +
+                "WITH d, races[0] AS debut, [x IN races " +
+                "WHERE x.pos = '1'][0] AS firstWin, races AS allRaces " +
+                "WHERE firstWin IS NOT NULL " +
+                "WITH d, debut, firstWin, allRaces, apoc.coll.indexOf(allRaces, debut) AS debutIndex, apoc.coll.indexOf(allRaces, firstWin) AS winIndex " +
+                "WITH d, debut, firstWin, (winIndex - debutIndex + 1) AS `Races To Win`, duration.inDays(debut.date, firstWin.date).days AS `Days To First Win` " +
+                "RETURN d.forename + ' ' + d.surname AS Driver, toString(debut.date.day) + '/' + toString(debut.date.month) + '/' + toString(debut.date.year) AS `Debut Date`, debut.race.name AS DebutGP, toString(firstWin.date.day) + '/' + toString(firstWin.date.month) + '/' + toString(firstWin.date.year) AS `First Win Date`," +
+                " firstWin.race.name AS `First Win GP`, " +
+                "`Days To First Win`, `Races To Win` " +
+                "ORDER BY `Races To Win` ASC, `Days To First Win` ASC " +
+                "LIMIT 25",
             builtin: true
         },
         {
             name: "Almost there - most podiums, least wins",
-            query: "\"MATCH (d:Driver)-[r:RESULTS_IN]->(ra:Race)\n" +
+            query: "MATCH (d:Driver)-[r:RESULTS_IN]->(ra:Race)\n" +
                 "WITH \n" +
-                "  d,\n" +
-                "  toInteger(r.position) AS pos\n" +
-                "\n" +
+                "  d, toInteger(r.position) AS pos\n" +
                 "WITH \n" +
                 "  d,\n" +
                 "  COUNT(*) AS totalRaces,\n" +
                 "  COUNT(CASE WHEN pos <= 3 THEN 1 END) AS podiums,\n" +
                 "  COUNT(CASE WHEN pos = 1 THEN 1 END) AS wins\n" +
-                "\n" +
                 "WHERE podiums > 0 AND wins < podiums\n" +
-                "\n" +
                 "RETURN\n" +
                 "  d.forename + ' ' + d.surname AS Driver,\n" +
                 "  d.nationality as Nationality,\n" +
