@@ -267,10 +267,7 @@
                 "WITH n\n" +
                 "MATCH (d:Driver)\n" +
                 "WITH d, n LIMIT 1\n" +
-                "MERGE (d)-[r:HAS_NICKNAME]->(n)\n" +
-                "create indexes,,\"CREATE INDEX driver_id_index IF NOT EXISTS\n" +
-                "FOR (d:Driver)\n" +
-                "ON (d.driverId)",
+                "MERGE (d)-[r:HAS_NICKNAME]->(n)\n",
             builtin: true
         },
         {
