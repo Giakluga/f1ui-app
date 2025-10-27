@@ -196,7 +196,7 @@
         },
         {
             name: "Sherpa races - highest circuits",
-            query: "\"MATCH (c:Circuit)\n" +
+            query: "MATCH (c:Circuit)\n" +
                 "WHERE c.alt IS NOT NULL\n" +
                 "WITH c, toInteger(c.alt) AS altitude\n" +
                 "ORDER BY altitude DESC\n" +
@@ -209,7 +209,7 @@
         },
         {
             name: "Seniority - drivers that ran in more seasons",
-            query: "\"MATCH (d:Driver)-[:RESULTS_IN]->(ra:Race)\n" +
+            query: "MATCH (d:Driver)-[:RESULTS_IN]->(ra:Race)\n" +
                 "WITH d, COLLECT(DISTINCT ra.year) AS seasons\n" +
                 "RETURN \n" +
                 "  d.forename + ' ' + d.surname AS Driver,\n" +
@@ -221,7 +221,7 @@
         },
         {
             name: "No room for romance - drivers with more teams",
-            query: "\"MATCH (d:Driver)-[r:RESULTS_IN]->(ra:Race)\n" +
+            query: "MATCH (d:Driver)-[r:RESULTS_IN]->(ra:Race)\n" +
                 "MATCH (c:Constructor)\n" +
                 "WHERE toInteger(r.constructorId) = toInteger(c.constructorId)\n" +
                 "WITH d, COLLECT(DISTINCT c.name) AS Teams\n" +
@@ -235,7 +235,7 @@
         },
         {
             name: "Related drivers,",
-            query: "\"MATCH (d:Driver)\n" +
+            query: "MATCH (d:Driver)\n" +
                 "WITH d LIMIT 1\n" +
                 "MERGE (d)-[r:RELATED_TO {\n" +
                 "  driverId1: '',\n" +
@@ -246,7 +246,7 @@
         },
         {
             name: "Insert new driver",
-            query: "\"CREATE (:Driver {\n" +
+            query: "CREATE (:Driver {\n" +
                 "  forename: \"\"Kimi\"\",\n" +
                 "  surname: \"\"Antonelli\"\",\n" +
                 "  dob: date(\"\"2006-08-25\"\"),\n" +
@@ -259,7 +259,7 @@
         },
         {
             name: "Create nickname",
-            query: "\"CREATE (n:Driver_nick {\n" +
+            query: "CREATE (n:Driver_nick {\n" +
                 "  driverId: '',\n" +
                 "  nickname: '',\n" +
                 "  definition: ''\n" +
@@ -267,7 +267,7 @@
                 "WITH n\n" +
                 "MATCH (d:Driver)\n" +
                 "WITH d, n LIMIT 1\n" +
-                "MERGE (d)-[r:HAS_NICKNAME]->(n)\",14,11,false\n" +
+                "MERGE (d)-[r:HAS_NICKNAME]->(n)\n" +
                 "create indexes,,\"CREATE INDEX driver_id_index IF NOT EXISTS\n" +
                 "FOR (d:Driver)\n" +
                 "ON (d.driverId)",
@@ -275,21 +275,21 @@
         },
         {
             name: "INDEX_1",
-            query: "\"CREATE INDEX driver_forename_index IF NOT EXISTS\n" +
+            query: "CREATE INDEX driver_forename_index IF NOT EXISTS\n" +
                 "FOR (d:Driver)\n" +
                 "ON (d.forename);\n",
             builtin: true
         },
         {
             name: "INDEX_2",
-            query: "\"CREATE INDEX driver_surname_index IF NOT EXISTS\n" +
+            query: "CREATE INDEX driver_surname_index IF NOT EXISTS\n" +
                 "FOR (d:Driver)\n" +
                 "ON (d.surname);",
             builtin: true
         },
         {
             name: "INDEX_3",
-            query: "\"CREATE INDEX race_id_index IF NOT EXISTS\n" +
+            query: "CREATE INDEX race_id_index IF NOT EXISTS\n" +
                 "FOR (r:Race)\n" +
                 "ON (r.raceId);",
             builtin: true
