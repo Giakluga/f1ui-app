@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: f1ui-app
+    env: java
+    plan: free
+    buildCommand: "chmod +x ./mvnw && ./mvnw clean package -DskipTests"
+    startCommand: "java -jar target/*.jar"
+    envVars:
+      - key: NEO4J_URI
+        value: neo4j+s://72ef97ff.databases.neo4j.io
+      - key: NEO4J_USER
+        value: neo4j
+      - key: NEO4J_PASSWORD
+        value: MWs3qncDZTa_Pxhi9_gbya3oZfPiWfXfTQd2azuxGHc
+    autoDeploy: true
+    region: frankfurt
