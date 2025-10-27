@@ -134,7 +134,7 @@
         {
             name: "All time victories",
             query: "MATCH (d:Driver)-[rel:RESULTS_IN]->(r:Race)\n"+
-                "WHERE toInteger(r.position) = 1\n"+
+                "WHERE toInteger(rel.position) = 1\n"+
                 "RETURN d.forename + ' ' + d.surname AS driver, count(rel) AS wins ORDER BY wins DESC;",
             builtin: true
         },
