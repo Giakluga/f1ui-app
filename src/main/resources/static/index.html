@@ -179,7 +179,19 @@
         },
         {
             name: "Remuntada - best wins after worst grid position",
-            query: "MATCH (d:Driver)-[res:RESULTS_IN]->(ra:Race)-[:HELD_AT]->(c:Circuit) WHERE toInteger(res.position) = 1AND res.grid IS NOT NULLAND res.grid <> '\N'WITH d, ra, c, toInteger(res.grid) AS startPos, toInteger(res.position) AS endPosORDER BY startPos DESCLIMIT 10RETURNd.forename + "" "" + d.surname AS Driver,ra.name + "" ("" + ra.year + "")"" AS Race,startPos AS `Starting grid position`,endPos AS `Final position`,(startPos - endPos) AS `Positions gained`,"
+            query: "MATCH (d:Driver)-[res:RESULTS_IN]->(ra:Race)-[:HELD_AT]->(c:Circuit)\n" +
+                   "WHERE toInteger(res.position) = 1\n" +
+                   "AND res.grid IS NOT NULL\n" +
+                   "AND res.grid <> '\N'\n" +
+                 "WITH d, ra, c, toInteger(res.grid) AS startPos, toInteger(res.position) AS endPos\n" +
+                 "ORDER BY startPos DESC\n" +
+                 "LIMIT 10\n" +
+                 "RETURN\n" +
+                 "  d.forename +' ' + d.surname AS Driver,\n" +
+                 "  ra.name + ' ' (''+ ra.year + '')'' AS Race,\n" +
+                 "  startPos AS `Starting grid position`,\n" +
+                 "  endPos AS `Final position`,\n" +
+                 "  (startPos - endPos) AS `Positions gained`;\n",
             builtin: true
         },
         {
