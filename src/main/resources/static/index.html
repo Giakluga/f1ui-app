@@ -178,53 +178,108 @@
             builtin: true
         },
         {
-            name: "",
-            query: "MATCH (d:Driver)-[rel:RESULTS_IN]->(r:Race) WHERE toInteger(r.position) = 1 RETURN d.forename + ' ' + d.surname AS driver, count(rel) AS wins ORDER BY wins DESC",
+            name: "Remuntada - best wins after worst grid position",
+            query: "MATCH (d:Driver)-[res:RESULTS_IN]->(ra:Race)-[:HELD_AT]->(c:Circuit) WHERE toInteger(res.position) = 1AND res.grid IS NOT NULLAND res.grid <> '\N'WITH d, ra, c, toInteger(res.grid) AS startPos, toInteger(res.position) AS endPosORDER BY startPos DESCLIMIT 10RETURNd.forename + "" "" + d.surname AS Driver,ra.name + "" ("" + ra.year + "")"" AS Race,startPos AS `Starting grid position`,endPos AS `Final position`,(startPos - endPos) AS `Positions gained`,"
             builtin: true
         },
         {
-            name: "",
-            query: "MATCH (d:Driver)-[rel:RESULTS_IN]->(r:Race) WHERE toInteger(r.position) = 1 RETURN d.forename + ' ' + d.surname AS driver, count(rel) AS wins ORDER BY wins DESC",
+            name: "Sherpa races - highest circuits",
+            query: "\"MATCH (c:Circuit)\n" +
+                "WHERE c.alt IS NOT NULL\n" +
+                "WITH c, toInteger(c.alt) AS altitude\n" +
+                "ORDER BY altitude DESC\n" +
+                "LIMIT 3\n" +
+                "RETURN \n" +
+                "  c.name AS Circuit,\n" +
+                "  c.country AS `Country`,\n" +
+                "  altitude AS `Altitude (ASL)`",
             builtin: true
         },
         {
-            name: "",
-            query: "MATCH (d:Driver)-[rel:RESULTS_IN]->(r:Race) WHERE toInteger(r.position) = 1 RETURN d.forename + ' ' + d.surname AS driver, count(rel) AS wins ORDER BY wins DESC",
+            name: "Seniority - drivers that ran in more seasons",
+            query: "\"MATCH (d:Driver)-[:RESULTS_IN]->(ra:Race)\n" +
+                "WITH d, COLLECT(DISTINCT ra.year) AS seasons\n" +
+                "RETURN \n" +
+                "  d.forename + ' ' + d.surname AS Driver,\n" +
+                "  SIZE(seasons) AS `Number of seasons`,\n" +
+                "  seasons AS `Season list`\n" +
+                "ORDER BY `Number of seasons` DESC\n" +
+                "LIMIT 5",
             builtin: true
         },
         {
-            name: "",
-            query: "MATCH (d:Driver)-[rel:RESULTS_IN]->(r:Race) WHERE toInteger(r.position) = 1 RETURN d.forename + ' ' + d.surname AS driver, count(rel) AS wins ORDER BY wins DESC",
+            name: "No room for romance - drivers with more teams",
+            query: "\"MATCH (d:Driver)-[r:RESULTS_IN]->(ra:Race)\n" +
+                "MATCH (c:Constructor)\n" +
+                "WHERE toInteger(r.constructorId) = toInteger(c.constructorId)\n" +
+                "WITH d, COLLECT(DISTINCT c.name) AS Teams\n" +
+                "RETURN \n" +
+                "  d.forename + ' ' + d.surname AS Driver,\n" +
+                "  SIZE(Teams) AS `Number of teams`,\n" +
+                "  Teams AS `Team list`\n" +
+                "ORDER BY `Number of teams` DESC\n" +
+                "LIMIT 5",
             builtin: true
         },
         {
-            name: "",
-            query: "MATCH (d:Driver)-[rel:RESULTS_IN]->(r:Race) WHERE toInteger(r.position) = 1 RETURN d.forename + ' ' + d.surname AS driver, count(rel) AS wins ORDER BY wins DESC",
+            name: "Related drivers,",
+            query: "\"MATCH (d:Driver)\n" +
+                "WITH d LIMIT 1\n" +
+                "MERGE (d)-[r:RELATED_TO {\n" +
+                "  driverId1: '',\n" +
+                "  relationship: '',\n" +
+                "  driverId2: ''\n" +
+                "}]->(d)",
             builtin: true
         },
         {
-            name: "All time victories",
-            query: "MATCH (d:Driver)-[rel:RESULTS_IN]->(r:Race) WHERE toInteger(r.position) = 1 RETURN d.forename + ' ' + d.surname AS driver, count(rel) AS wins ORDER BY wins DESC",
+            name: "Insert new driver",
+            query: "\"CREATE (:Driver {\n" +
+                "  forename: \"\"Kimi\"\",\n" +
+                "  surname: \"\"Antonelli\"\",\n" +
+                "  dob: date(\"\"2006-08-25\"\"),\n" +
+                "  nationality: \"\"Italian\"\",\n" +
+                "  driverRef: \"\"antonelli\"\",\n" +
+                "  driverId: 863,\n" +
+                "  number: 12,\n" +
+                "  code: \"\"ANT\"\"})",
             builtin: true
         },
         {
-            name: "All time victories",
-            query: "MATCH (d:Driver)-[rel:RESULTS_IN]->(r:Race) WHERE toInteger(r.position) = 1 RETURN d.forename + ' ' + d.surname AS driver, count(rel) AS wins ORDER BY wins DESC",
+            name: "Create nickname",
+            query: "\"CREATE (n:Driver_nick {\n" +
+                "  driverId: '',\n" +
+                "  nickname: '',\n" +
+                "  definition: ''\n" +
+                "})\n" +
+                "WITH n\n" +
+                "MATCH (d:Driver)\n" +
+                "WITH d, n LIMIT 1\n" +
+                "MERGE (d)-[r:HAS_NICKNAME]->(n)\",14,11,false\n" +
+                "create indexes,,\"CREATE INDEX driver_id_index IF NOT EXISTS\n" +
+                "FOR (d:Driver)\n" +
+                "ON (d.driverId)",
             builtin: true
         },
         {
-            name: "All time victories",
-            query: "MATCH (d:Driver)-[rel:RESULTS_IN]->(r:Race) WHERE toInteger(r.position) = 1 RETURN d.forename + ' ' + d.surname AS driver, count(rel) AS wins ORDER BY wins DESC",
+            name: "INDEX_1",
+            query: "\"CREATE INDEX driver_forename_index IF NOT EXISTS\n" +
+                "FOR (d:Driver)\n" +
+                "ON (d.forename);\n",
             builtin: true
         },
         {
-            name: "All time victories",
-            query: "MATCH (d:Driver)-[rel:RESULTS_IN]->(r:Race) WHERE toInteger(r.position) = 1 RETURN d.forename + ' ' + d.surname AS driver, count(rel) AS wins ORDER BY wins DESC",
+            name: "INDEX_2",
+            query: "\"CREATE INDEX driver_surname_index IF NOT EXISTS\n" +
+                "FOR (d:Driver)\n" +
+                "ON (d.surname);",
             builtin: true
         },
         {
-            name: "All time victories",
-            query: "MATCH (d:Driver)-[rel:RESULTS_IN]->(r:Race) WHERE toInteger(r.position) = 1 RETURN d.forename + ' ' + d.surname AS driver, count(rel) AS wins ORDER BY wins DESC",
+            name: "INDEX_3",
+            query: "\"CREATE INDEX race_id_index IF NOT EXISTS\n" +
+                "FOR (r:Race)\n" +
+                "ON (r.raceId);",
             builtin: true
         }
     ];
